@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  MqttService
+Globals:
+  Function:
+    Timeout: 3
+Resources:
+  MqttFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: app.main.handler
+      Runtime: python3.8
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: FastApiGateway
+            Path: /{proxy+}
+            Method: ANY
+      Timeout: 300
+      MemorySize: 128
+      FunctionName: mqtt-service
+      Description: Api service for gateway and sensor Mqtt Protocol
+  FastApiGateway:
+        Type: AWS::Serverless::Api
+        Properties:
+            StageName: prod
+            OpenApiVersion: '3.0.0'
+Outputs:
+  MqttApi:
+    Description: "API Gateway endpoint URL for Prod stage for Mqtt Function"
+    Value: !Sub "https://${FastApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod/"
+  MqttFunction:
+    Description: "Mqtt Lambda Function ARN"
+    Value: !GetAtt MqttFunction.Arn
+  MqttFunctionIamRole:
+    Description: "IAM Role created for Mqtt function"
+    Value: !GetAtt MqttFunction.Arn
