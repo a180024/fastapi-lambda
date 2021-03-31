@@ -42,11 +42,19 @@ Github Actions will deploy application to AWS Lambda on push to master branch. C
 - AWS_SECRET_KEY
 - AWS_SECRET_ACCESS_KEY
 
+## Deploy via Travis CI
+
+Travis CI will build application via **Docker** and deploy to AWS Lambda on push to master branch. Configure the corresponding repository in Travis CI console with these environment variables to allow configuration of AWS CLI during deployment.
+
+- AWS_SECRET_KEY
+- AWS_SECRET_ACCESS_KEY
+- AWS_DEFAULT_REGION
+
 ## Cleanup
 
 To delete the resouces used in the application.
 
 ```bash
-aws cloudformation delete-stack --stack-name MqttService
+aws cloudformation delete-stack --stack-name <stackName>
 ```
 
