@@ -1,0 +1,33 @@
+os: linux
+dist: xenial
+language: python
+
+cache:
+  - pip
+python:
+  - 3.8
+
+before_install:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+
+install:
+  - pip3 install awscli
+  - pip3 install aws-sam-cli
+
+jobs:
+  include:
+    - stage: deploy
+      script:
+        - sam validate
+        - docker pull "amazon/aws-sam-cli-build-image-python3.8"
+        - sam build
+        - sam deploy 
+      skip_cleanup: true
+      if: branch = master
+
+notifications:
+  email:
+    on_failure: always
